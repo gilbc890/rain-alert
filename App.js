@@ -7,26 +7,49 @@ import Weather from './Weather';
 const API_KEY = "b33559a795955c42d473b21c749e214a";
 
 export default function App() {
-  const [condition, setCondition] = useState();
-  const [temp, setTemp] = useState();
+  const [firstCondition, setFirstCondition] = useState();
+  const [secondCondition, setSecondCondition] = useState();
+  const [thirdCondition, setThirdCondition] = useState();
+  const [fourthCondition, setFourthCondition] = useState();
+  const [firstTemp, setFirstTemp] = useState();
+  const [secondTemp, setSecondTemp] = useState();
+  const [thirdTemp, setThirdTemp] = useState();
+  const [fourthTemp, setFourthTemp] = useState();
+  const [firstDt_txt, setFirstDt_txt] = useState();
+  const [secondDt_txt, setSecondDt_txt] = useState();
+  const [thirdDt_txt, setThirdDt_txt] = useState();
+  const [fourthDt_txt, setFourthDt_txt] = useState();
 
-  const getWeather = async (latitude, longitude) => {
+  const getWeatherForecast = async (latitude, longitude) => {
     const { data:{
-      main : {temp},
-      weather
+      list
     } 
   } = await axios.get(
-      `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&APPID=${API_KEY}&units=metric`
+      `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&APPID=${API_KEY}&units=metric`
     );
-    setCondition(weather[0].main);
-    setTemp(temp);
-  }
 
+    setFirstCondition(list[0].weather[0].main)
+    setFirstTemp(list[0].main.temp)
+    setFirstDt_txt(list[0].dt_txt)
+
+    setSecondCondition(list[2].weather[0].main)
+    setSecondTemp(list[2].main.temp)
+    setSecondDt_txt(list[2].dt_txt)
+
+    setThirdCondition(list[4].weather[0].main)
+    setThirdTemp(list[4].main.temp)
+    setThirdDt_txt(list[4].dt_txt)
+
+    setFourthCondition(list[6].weather[0].main)
+    setFourthTemp(list[6].main.temp)
+    setFourthDt_txt(list[6].dt_txt)
+  }
+  
   const getLocation = async () => {
     try {
       await Location.requestPermissionsAsync();
       const {coords: {latitude, longitude}} = await Location.getCurrentPositionAsync();
-      getWeather(latitude, longitude)
+      getWeatherForecast(latitude, longitude);
     } catch (error) {
       Alert.alert("Please allow us to get your place");
     }
@@ -34,13 +57,27 @@ export default function App() {
 
   useEffect(() => {
     getLocation();
-    console.log(temp, 'did')
-    console.log(condition, 'did condition')
   });
 
   return (
     <View style={styles.container}>
-      <Weather />
+      <Weather 
+        firstCondition={firstCondition} 
+        firstTemp={firstTemp} 
+        firstDt_txt={firstDt_txt}
+
+        secondCondition={secondCondition}
+        secondTemp={secondTemp}
+        secondDt_txt={secondDt_txt}
+
+        thirdCondition={thirdCondition}
+        thirdTemp={thirdTemp}
+        thirdDt_txt={thirdDt_txt}
+
+        fourthCondition={fourthCondition}
+        fourthTemp={fourthTemp}
+        fourthDt_txt={fourthDt_txt}
+      />
     </View>
   );
 }
