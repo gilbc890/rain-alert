@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { API_KEY } from './config/index.js';
 import axios from "axios";
 import * as Location from 'expo-location';
 import Weather from './Weather';
-
-const API_KEY = "b33559a795955c42d473b21c749e214a";
+import { database } from './firebase';
 
 export default function App() {
   const [firstCondition, setFirstCondition] = useState();
@@ -27,7 +27,6 @@ export default function App() {
   } = await axios.get(
       `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&APPID=${API_KEY}&units=metric`
     );
-
     setFirstCondition(list[0].weather[0].main)
     setFirstTemp(list[0].main.temp)
     setFirstDt_txt(list[0].dt_txt)
@@ -55,8 +54,18 @@ export default function App() {
     }
   };  
 
+  //test
+  const getfirebase = () => {
+    const test = database.ref();
+    test.on('value', (snapshot) => {
+      console.log(snapshot.val())
+    });
+
+  }
+
   useEffect(() => {
     getLocation();
+    getfirebase();
   });
 
   return (
