@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Alert } from 'react-native';
 import { API_KEY } from './config/index.js';
 import axios from "axios";
 import * as Location from 'expo-location';
@@ -20,12 +20,12 @@ export default function App() {
   const [thirdDt_txt, setThirdDt_txt] = useState();
   const [fourthDt_txt, setFourthDt_txt] = useState();
 
-  const getWeatherForecast = async (latitude, longitude) => {
+  const getWeatherForecast = async (city, country) => {
     const { data:{
       list
     } 
   } = await axios.get(
-      `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&APPID=${API_KEY}&units=metric`
+      `http://api.openweathermap.org/data/2.5/forecast?q=${city},${country}&APPID=${API_KEY}&units=metric`
     );
     setFirstCondition(list[0].weather[0].main)
     setFirstTemp(list[0].main.temp)
@@ -48,7 +48,8 @@ export default function App() {
     try {
       await Location.requestPermissionsAsync();
       const {coords: {latitude, longitude}} = await Location.getCurrentPositionAsync();
-      getWeatherForecast(latitude, longitude);
+      const city = await Location.reverseGeocodeAsync({latitude, longitude});
+      getWeatherForecast(city[0].city, city[0].isoCountryCode);
     } catch (error) {
       Alert.alert("Please allow us to get your place");
     }
@@ -60,12 +61,11 @@ export default function App() {
     test.on('value', (snapshot) => {
       console.log(snapshot.val())
     });
-
   }
+  
 
   useEffect(() => {
     getLocation();
-    getfirebase();
   });
 
   return (
